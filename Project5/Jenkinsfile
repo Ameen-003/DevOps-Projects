@@ -46,14 +46,50 @@ pipeline {
                 }
             }
         }
+       
+        stage('Test Ansible Connection') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'ec2-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        mkdir -p ~/.ssh
+                        chmod 700 ~/.ssh
+
+                        ssh-keyscan -H 172.31.42.151 >> ~/.ssh/known_hosts
+                        chmod 600 ~/.ssh/known_hosts
+
+                        ansible web \
+                        -i Project5/inventory.ini \
+                        -m ping \
+                        --private-key "$SSH_KEY" \
+                        -u "$SSH_USER"
+                    '''
+                }
+            }
+        }
 
         stage('Deploy using Ansible') {
             steps {
-                sh '''
-                    ansible-playbook \
-                    -i Project5/inventory.ini \
-                    Project5/ansible/deploy.yml
-                '''
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'ec2-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        ansible-playbook \
+                        -i Project5/inventory.ini \
+                        Project5/ansible/deploy.yml \
+                        --private-key "$SSH_KEY" \
+                        -u "$SSH_USER"
+                    '''
+                }
             }
         }
     }
