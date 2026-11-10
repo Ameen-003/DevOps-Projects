@@ -3,16 +3,16 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USER = 'YOUR_DOCKERHUB_USERNAME'
+        DOCKER_HUB_USER = 'ameen03'
         IMAGE_NAME = 'project5-app'
         IMAGE_TAG = 'latest'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/dipakrasal2009/DevOps-Projects.git'
+                    url: 'https://github.com/Ameen-003/DevOps-Projects.git'
             }
         }
 
