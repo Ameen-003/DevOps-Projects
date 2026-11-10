@@ -1,17 +1,24 @@
 ---
-- hosts: web
+- name: Deploy application on Docker EC2
+  hosts: web
   become: yes
+
   tasks:
     - name: Stop existing container
-      docker_container:
+      community.docker.docker_container:
         name: myapp
         state: absent
 
+    - name: Pull latest Docker image
+      community.docker.docker_image:
+        name: ameen03/project5-app:latest
+        source: pull
+
     - name: Run new container
-      docker_container:
+      community.docker.docker_container:
         name: myapp
-        image: dipakrasal2009/abcd:latest
+        image: ameen03/project5-app:latest
         state: started
+        restart_policy: always
         ports:
           - "65:80"
-
