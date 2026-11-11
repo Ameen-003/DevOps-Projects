@@ -13,6 +13,7 @@
       community.docker.docker_image:
         name: ameen03/project5-app:latest
         source: pull
+        force_source: true
 
     - name: Run new container
       community.docker.docker_container:
